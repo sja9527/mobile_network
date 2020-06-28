@@ -14,21 +14,22 @@
 
 ### 2、训练（这一步可以没有，在result中提供了训练好的）
 
-  改变**CAISIA_DATA_DIR** and **LFW_DATA_DAR** (在`config.py`文件中)
+改变**CAISIA_DATA_DIR** and **LFW_DATA_DAR** (在`config.py`文件中)
   
-  运行指令训练
-      ```
-      python train.py
-      ```
-      
-### 测试
+运行指令训练
 
-  在LFW数据集上测试
+```
+python train.py
+```
+      
+### 3、测试
+
+在LFW数据集上测试
     
       
-      ```
-      sh ./run.sh
-      ```
+```
+sh ./run.sh
+```
 
 ## 参考资料
 
