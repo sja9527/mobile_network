@@ -51,6 +51,7 @@ optimizer_ft = optim.SGD([
     {'params': prelu_params, 'weight_decay': 0.0}
 ], lr=0.1, momentum=0.9, nesterov=True)
 
+# 学习率衰减
 exp_lr_scheduler = lr_scheduler.MultiStepLR(optimizer_ft, milestones=[36, 52, 58], gamma=0.1)
 
 
