@@ -92,6 +92,7 @@ class MobileFacenet(nn.Module):
 
         self.linear1 = ConvBlock(512, 128, 1, 1, 0, linear=True)
 
+        # 模型参数初始化的技巧
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
@@ -131,8 +132,11 @@ class ArcMarginProduct(nn.Module):
         self.out_features = out_features
         self.s = s
         self.m = m
+
+        # 将不可训练的Tensor类型转变为可训练的Parameter，它能让变量在学习的过程中不断优化达到最优值
+        # linear 的weight 和bias就是parameter类型，并且不能用tensor类型替换。与torch.tensor([1,2,3],requires_grad=True)的区别，这个只是将参数变成可训练的，并没有绑定在module的parameter列表中。
         self.weight = Parameter(torch.Tensor(out_features, in_features))
-        nn.init.xavier_uniform_(self.weight)
+        nn.init.xavier_uniform_(self.weight) # 初始化参数的方式
         # init.kaiming_uniform_()
         # self.weight.data.normal_(std=0.001)
 
@@ -144,16 +148,21 @@ class ArcMarginProduct(nn.Module):
         self.mm = math.sin(math.pi - m) * m
 
     def forward(self, x, label):
+        # cosine = x * w = cos(theta)
         cosine = F.linear(F.normalize(x), F.normalize(self.weight))
+        # sin(theta) = 根号(1- cos^2)
         sine = torch.sqrt(1.0 - torch.pow(cosine, 2))
+        # cos(theta + m) = cos(theta) * cos(m) - sin(theta) * sin(m)
         phi = cosine * self.cos_m - sine * self.sin_m
         if self.easy_margin:
+            # 如果cos(theta)>0，那么两个向量是相似的，选择phi，否则选择cosine
             phi = torch.where(cosine > 0, phi, cosine)
         else:
+            # if theta + m > 180 ,使用cosface的计算方式
             phi = torch.where((cosine - self.th) > 0, phi, cosine - self.mm)
-        # one_hot = torch.zeros(cosine.size(), device='cuda')
-        one_hot = torch.zeros(cosine.size())
-        one_hot.scatter_(1, label.view(-1, 1).long(), 1)
+        
+        one_hot = torch.zeros(cosine.size())# one_hot = torch.zeros(cosine.size(), device='cuda')
+        one_hot.scatter_(1, label.view(-1, 1).long(), 1) # 这里是为了得到one-hot编码
         output = (one_hot * phi) + ((1.0 - one_hot) * cosine)
         output *= self.s
         return output
