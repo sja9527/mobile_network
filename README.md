@@ -19,7 +19,7 @@
 运行指令训练
 
 ```
-python train.py
+python train_my.py
 ```
       
 ### 3、测试
