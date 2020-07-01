@@ -27,7 +27,7 @@ testdataset = LFW(nl, nr)
 testloader = torch.utils.data.DataLoader(testdataset, batch_size=32,
                                          shuffle=False, num_workers=8, drop_last=False)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 # define model
 net = model.MobileFacenet()
