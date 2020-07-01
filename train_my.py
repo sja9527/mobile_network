@@ -38,8 +38,6 @@ testloader = torch.utils.data.DataLoader(testdataset, batch_size=32,
 #                 GPU_list += ','
 
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = GPU_list
-# device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 device = DEVICE
 # define model
 net = model.MobileFacenet()
