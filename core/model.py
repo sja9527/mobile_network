@@ -5,6 +5,7 @@ from torch.autograd import Variable
 
 import math
 from torch.nn import Parameter
+from config import *
 
 class Bottleneck(nn.Module):
     def __init__(self, inp, oup, stride, expansion):
@@ -162,6 +163,8 @@ class ArcMarginProduct(nn.Module):
             phi = torch.where((cosine - self.th) > 0, phi, cosine - self.mm)
         
         one_hot = torch.zeros(cosine.size())# one_hot = torch.zeros(cosine.size(), device='cuda')
+        one_hot = one_hot.to(DEVICE) # 这里必须要搬到CUDA上才能计算
+
         one_hot.scatter_(1, label.view(-1, 1).long(), 1) # 这里是为了得到one-hot编码
         output = (one_hot * phi) + ((1.0 - one_hot) * cosine)
         output *= self.s

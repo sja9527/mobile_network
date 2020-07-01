@@ -1,8 +1,7 @@
 import os
 import torch.utils.data
 from torch import nn
-from config import BATCH_SIZE, SAVE_FREQ, RESUME, SAVE_DIR, TEST_FREQ, TOTAL_EPOCH, MODEL_PRE, GPU
-from config import CASIA_DATA_DIR, LFW_DATA_DIR
+from config import *
 from core import model
 from dataloader.CASIA_Face_loader import CASIA_Face
 from dataloader.LFW_loader import LFW
@@ -26,9 +25,22 @@ nl, nr, folds, flags = parseList(root=LFW_DATA_DIR)
 testdataset = LFW(nl, nr)
 testloader = torch.utils.data.DataLoader(testdataset, batch_size=32,
                                          shuffle=False, num_workers=8, drop_last=False)
+# GPU_list = ''
+# if isinstance(GPU, int): # 如果只有一个整型的值
+#     GPU_list = str(GPU)
+# else :
+#     if isinstance(GPU, str): # 如果本身就是一个字符串
+#         GPU_list = GPU
+#     else: # 如果是一组整型的值
+#         for i, gpu in enumerate(GPU):
+#             GPU_list += str(gpu)
+#             if i != len(GPU) -1:
+#                 GPU_list += ','
 
-device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
+# os.environ["CUDA_VISIBLE_DEVICES"] = GPU_list
+# device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
+device = DEVICE
 # define model
 net = model.MobileFacenet()
 ArcMargin = model.ArcMarginProduct(128, trainset.class_nums)
@@ -62,7 +74,7 @@ criterion = torch.nn.CrossEntropyLoss()
 best_acc = 0.0
 best_epoch = 0
 for epoch in range(start_epoch, TOTAL_EPOCH+1):
-    exp_lr_scheduler.step()
+
     # train model
     print('Train Epoch: {}/{} ...'.format(epoch, TOTAL_EPOCH))
     net.train()
@@ -118,8 +130,12 @@ for epoch in range(start_epoch, TOTAL_EPOCH+1):
     if epoch % SAVE_FREQ == 0:
         print('Saving checkpoint: {}'.format(epoch))
         net_state_dict = net.state_dict()
+        if not os.path.exists(SAVE_DIR):
+            os.mkdir(SAVE_DIR)
         torch.save({
             'epoch': epoch,
             'net_state_dict': net_state_dict},
-            os.path.join("model", '%03d.ckpt' % epoch))
+            os.path.join(SAVE_DIR, '%03d.ckpt' % epoch))
+
+    exp_lr_scheduler.step()
 print('finishing training')
