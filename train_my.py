@@ -11,6 +11,8 @@ from lfw_eval import parseList, evaluation_10_fold
 import numpy as np
 import scipy.io
 
+torch.manual_seed(1234)
+
 # other init
 start_epoch = 1
 
