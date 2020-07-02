@@ -65,8 +65,9 @@ def parseList(root):
     return [nameLs, nameRs, folds, flags]
 
 if __name__ == '__main__':
-    nl, nr, flods, flags = parseList(LFW_DATA_DIR)
+    nl, nr, flods, flags = parseList("../LFW")
     lfw_dataset = LFW(nl, nr)
     lfw_loader = torch.utils.data.DataLoader(lfw_dataset, batch_size=32,shuffle=False, num_workers=8, drop_last=False)
     sample = next(iter(lfw_loader)) # (4, 32, 3, 112, 96)
+    
 

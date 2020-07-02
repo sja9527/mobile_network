@@ -53,7 +53,7 @@ class CASIA_Face(object):
 
 if __name__ == '__main__':
     # data_dir = '/home/brl/USER/fzc/dataset/CASIA'
-    dataset = CASIA_Face(root=CASIA_DATA_DIR)
+    dataset = CASIA_Face("../CASIA")
     trainloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=8, drop_last=False)
     print(len(dataset))
 
