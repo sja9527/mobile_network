@@ -5,7 +5,10 @@ from torch.autograd import Variable
 
 import math
 from torch.nn import Parameter
+import sys
+sys.path.append("..")
 from config import *
+from torchsummary import summary
 
 class Bottleneck(nn.Module):
     def __init__(self, inp, oup, stride, expansion):
@@ -171,8 +174,12 @@ class ArcMarginProduct(nn.Module):
         return output
 
 if __name__ == "__main__":
-    input = Variable(torch.FloatTensor(2, 3, 112, 96))
-    net = MobileFacenet()
-    print(net)
-    x = net(input)
-    print(x.shape)
+    # input = Variable(torch.FloatTensor(2, 3, 112, 96))
+    # net = MobileFacenet()
+    # print(net)
+    # x = net(input)
+    # print(x.shape)
+
+    model = MobileFacenet()
+    model.to(DEVICE)
+    summary(model, input_size=(3, 112, 96))
